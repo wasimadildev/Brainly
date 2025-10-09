@@ -9,10 +9,18 @@
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
-    "express": "^4.19.2"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.5.0",
     "prisma": "^6.16.3",
     "ts-node-dev": "^2.0.0",

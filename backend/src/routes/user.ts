@@ -1,9 +1,13 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import { signup, signin, profile } from "../controllers/user";
+import { verifyToken } from "../middlewares/auth";
 
-const router = express.Router(); 
+const router = express.Router();
 
-router.get("/user", (req: Request, res: Response) => {
-  res.send("Hello From user");
-});
+router.post("/signup", signup);
+router.post("/signin", signin);
+router.get("/profile", verifyToken, profile);
+
+
 
 export default router;

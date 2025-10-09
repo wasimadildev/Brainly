@@ -10,9 +10,32 @@ datasource db {
 
 model User {
   id        Int      @id @default(autoincrement())
-  name      String?  @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
+  name      String
+  email     String   @unique
+  password  String
   createdAt DateTime @default(now())
-  password  String   @db.VarChar(255)
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
+
+  notes     Note[]
+}
+
+model Note {
+  id          Int       @id @default(autoincrement())
+  title       String
+  type        String
+  content     String?
+  description String?
+  thumbnail   String?
+  tags        String[]  @default([])
+  addedDate   DateTime  @default(now())
+
+  // New fields for public sharing
+  shareId     String?   @unique       // unique token used in public share link
+  isShared    Boolean   @default(false) // flag to toggle public access
+  sharedAt    DateTime?               // when it was shared
+  expiresAt   DateTime?               // optional expiry date (can keep null)
+
+  // Existing relation
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
 }
