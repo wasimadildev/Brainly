@@ -32,7 +32,7 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
-// Signin
+
 export const signin = async (req: Request, res: Response) => {
   const { email, password }: IUser = req.body;
 
@@ -56,9 +56,9 @@ export const signin = async (req: Request, res: Response) => {
   
    res
   .cookie("token", token, {
-    httpOnly: true, // prevents JS access
+    // httpOnly: true, 
     secure:false,
-    //secure: process.env.NODE_ENV === "production", // HTTPS only in prod
+    //secure: process.env.NODE_ENV === "production", 
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   })
@@ -66,6 +66,7 @@ export const signin = async (req: Request, res: Response) => {
     success: true,
     message: "Login successful",
     user: { id: user.id, name: user.name, email: user.email },
+    token,
   });
   } catch (error) {
     console.error(error);

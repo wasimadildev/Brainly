@@ -1,27 +1,32 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../api/api";
 import { Mail, Lock, Loader2 } from "lucide-react";
+ import toast from "react-hot-toast";
+import api from "../api/api";
+import { useCookies } from "react-cookie";
 
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [cookies] = useCookies(["token"]);
 
-  const handleSubmit = async (e : any) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await api.post("/signin", form);
-      alert(res.data.message || "Login successful!");
-      navigate("/profile");
-    } catch (err : any) {
-      alert(err.response?.data?.message || "Invalid credentials");
-    } finally {
-      setLoading(false);
-    }
-  };
 
+const handleSubmit = async (e: any) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const res = await api.post("/signin", form);
+    toast.success(res.data.message || "Login successful!");
+    navigate("/dashboard");
+    console.log(res)
+    console.log(cookies)
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || "Invalid credentials");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 text-white">
       {/* Left Section */}

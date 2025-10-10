@@ -1,46 +1,42 @@
-import { Brain, Twitter, Video, FileText, Link, Hash, LayoutGrid } from "lucide-react";
-import { cn } from "../lib/utils";
-
-const navigation = [
-  { name: "All Notes", icon: LayoutGrid, filter: "all" },
-  { name: "Tweets", icon: Twitter, filter: "tweet" },
-  { name: "Videos", icon: Video, filter: "video" },
-  { name: "Documents", icon: FileText, filter: "document" },
-  { name: "Links", icon: Link, filter: "link" },
-  { name: "Tags", icon: Hash, filter: "tags" },
-];
+import { SidebarItem } from "./SidebarItem";
+import { FileText, Twitter, Video, Link2, Hash, X } from "lucide-react";
+import { Logo } from "./Logo";
 
 interface SidebarProps {
   activeFilter: string;
-  onFilterChange: (filter: string) => void;
-  className?: string;
+  setActiveFilter: (filter: string) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
 }
 
-export function Sidebar({ activeFilter, onFilterChange, className }: SidebarProps) {
-  return (
-    <div className={cn("flex h-full flex-col border-r border-sidebar-border bg-sidebar px-4 py-6", className)}>
-      <div className="mb-8 flex items-center gap-3 px-2">
-        <Brain className="h-8 w-8 text-sidebar-primary" />
-        <span className="text-xl font-semibold text-sidebar-foreground">Second Brain</span>
+
+export const Sidebar = ({ activeFilter, setActiveFilter, sidebarOpen, setSidebarOpen } : SidebarProps) => (
+  <>
+    <div
+      className={`fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity ${
+        sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      }`}
+      onClick={() => setSidebarOpen(false)}
+    />
+    <aside
+      className={`fixed lg:sticky top-0 left-0 h-screen w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-6 flex flex-col z-30 transition-transform lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-8">
+        <Logo />
+        <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
+          <X className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+        </button>
       </div>
-
-      <nav className="flex-1 space-y-1">
-        {navigation.map((item) => (
-          <button
-            key={item.filter}
-            onClick={() => onFilterChange(item.filter)}
-            className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              activeFilter === item.filter
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <item.icon className="h-5 w-5" />
-            <span>{item.name}</span>
-          </button>
-        ))}
+      <nav className="flex-1 space-y-2">
+        <SidebarItem icon={FileText} label="All Notes" active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} />
+        <SidebarItem icon={Twitter} label="Tweets" active={activeFilter === 'tweet'} onClick={() => setActiveFilter('tweet')} />
+        <SidebarItem icon={Video} label="Videos" active={activeFilter === 'video'} onClick={() => setActiveFilter('video')} />
+        <SidebarItem icon={FileText} label="Documents" active={activeFilter === 'document'} onClick={() => setActiveFilter('document')} />
+        <SidebarItem icon={Link2} label="Links" active={activeFilter === 'link'} onClick={() => setActiveFilter('link')} />
+        <SidebarItem icon={Hash} label="Tags" active={activeFilter === 'tags'} onClick={() => setActiveFilter('tags')} />
       </nav>
-    </div>
-  );
-}
+    </aside>
+  </>
+);
