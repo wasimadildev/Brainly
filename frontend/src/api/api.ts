@@ -72,41 +72,5 @@ export const authAPI = {
 
 // 🗒️ ---------- NOTES ENDPOINTS ----------
 
-export const noteAPI = {
-  async getAllNotes() {
-    const res = await api.get<ApiResponse<Note[]>>("/notes");
-    return res.data.data;
-  },
-
-  async getNoteById(id: string) {
-    const res = await api.get<ApiResponse<Note>>(`/notes/${id}`);
-    return res.data.data;
-  },
-
-  async createNote(data: Partial<Note>) {
-    const res = await api.post<ApiResponse<Note>>("/notes", data);
-    return res.data.data;
-  },
-
-  async updateNote(id: string, data: Partial<Note>) {
-    const res = await api.put<ApiResponse<Note>>(`/notes/${id}`, data);
-    return res.data.data;
-  },
-
-  async deleteNote(id: string) {
-    const res = await api.delete<ApiResponse<{ deleted: boolean }>>(`/notes/${id}`);
-    return res.data.data;
-  },
-
-  async generateShareLink(noteId: string) {
-    const res = await api.post<ApiResponse<{ shareLink: string }>>(`/notes/${noteId}/share`);
-    return res.data.data;
-  },
-
-  async viewSharedNote(shareId: string) {
-    const res = await api.get<ApiResponse<Note>>(`/shared/${shareId}`);
-    return res.data.data;
-  },
-};
 
 export default api;

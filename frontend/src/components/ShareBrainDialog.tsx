@@ -14,7 +14,7 @@ interface ShareBrainDialogProps {
   itemCount?: number;
 }
 
-export function ShareBrainDialog({ open, onOpenChange, itemCount = 3 }: ShareBrainDialogProps) {
+function ShareBrainDialog({ open, onOpenChange, itemCount = 3 }: ShareBrainDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -38,3 +38,4 @@ export function ShareBrainDialog({ open, onOpenChange, itemCount = 3 }: ShareBra
     </Dialog>
   );
 }
+export default ShareBrainDialog;

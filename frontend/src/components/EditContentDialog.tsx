@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,13 +19,14 @@ import {
 } from "@/components/ui/select";
 import { type Note } from "@/components/NoteCard";
 
-interface AddContentDialogProps {
+interface EditContentDialogProps {
   open: boolean;
+  note: Note | null;
   onOpenChange: (open: boolean) => void;
-  onAdd: (note: Omit<Note, "id" | "addedDate">) => Promise<void> | void;
+  onUpdate: (id: number, updatedNote: Partial<Note>) => Promise<void> | void;
 }
 
-function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) {
+function EditContentDialog({ open, note, onOpenChange, onUpdate }: EditContentDialogProps) {
   const [type, setType] = useState<Note["type"]>("document");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -33,8 +34,20 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
   const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ✅ Pre-fill form when note changes
+  useEffect(() => {
+    if (note) {
+      setType(note.type || "document");
+      setTitle(note.title || "");
+      setDescription(note.description || "");
+      setContent(note.content || "");
+      setTags(note.tags?.join(", ") || "");
+    }
+  }, [note]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!note) return;
     setLoading(true);
 
     try {
@@ -44,24 +57,18 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
         .filter(Boolean)
         .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`));
 
-      const newNote: Omit<Note, "id" | "addedDate"> = {
+      const updatedNote: Partial<Note> = {
         type,
         title,
-        description: description || undefined,
-        content: content || undefined,
+        description,
+        content,
         tags: tagArray,
       };
 
-      await onAdd(newNote); // 👈 Save note via API
-      // Reset form
-      setTitle("");
-      setDescription("");
-      setContent("");
-      setTags("");
-      setType("document");
+      await onUpdate(note.id, updatedNote); // 👈 API call
       onOpenChange(false);
     } catch (error) {
-      console.error("❌ Failed to add note:", error);
+      console.error("❌ Failed to update note:", error);
     } finally {
       setLoading(false);
     }
@@ -72,10 +79,10 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
       <DialogContent className="sm:max-w-[500px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-2xl rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Add New Content
+            Edit Note
           </DialogTitle>
           <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
-            Save a tweet, video, document, or link to your Second Brain.
+            Update the content and tags of your saved note.
           </DialogDescription>
         </DialogHeader>
 
@@ -105,7 +112,7 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
             </Label>
             <Input
               id="title"
-              placeholder="Enter a title..."
+              placeholder="Edit title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -120,7 +127,7 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
             </Label>
             <Textarea
               id="description"
-              placeholder="Add a short description..."
+              placeholder="Edit short description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -128,14 +135,14 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
             />
           </div>
 
-          {/* Optional Content Field */}
+          {/* Content */}
           <div className="space-y-2">
             <Label htmlFor="content" className="text-gray-700 dark:text-gray-300">
               Content (Optional)
             </Label>
             <Textarea
               id="content"
-              placeholder="Paste your text, link, or notes here..."
+              placeholder="Edit text, link, or notes..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={3}
@@ -176,7 +183,7 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
               disabled={loading}
               className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg transition-all"
             >
-              {loading ? "Saving..." : "Add Content"}
+              {loading ? "Updating..." : "Save Changes"}
             </Button>
           </div>
         </form>
@@ -185,4 +192,4 @@ function AddContentDialog({ open, onOpenChange, onAdd }: AddContentDialogProps) 
   );
 }
 
-export default AddContentDialog;
+export default EditContentDialog;
