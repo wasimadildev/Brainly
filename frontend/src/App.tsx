@@ -2,10 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import SharedNotePage from "./pages/SharedNotePage";
+
 import Dashboard from "./pages/Dashboard";
 import { Toaster } from "react-hot-toast";
 import PrivateRoute from "./components/PrivateRoute";
+import SharedNotePage from "./pages/SharedNote";
 
 export default function App() {
   return (
@@ -25,7 +26,8 @@ export default function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/share/:shareId" element={<SharedNotePage />} /> {/* 👈 public link */}
+           <Route path="/shared/:shareId" element={<SharedNotePage />} />
+
 
       </Routes>
 

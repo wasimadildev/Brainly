@@ -8,6 +8,10 @@ import { NoteCard } from "@/components/NoteCard";
 import ShareBrainDialog from "@/components/ShareBrainDialog";
 import axios from "axios";
 import EditContentDialog from "@/components/EditContentDialog";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
+import {  Link as LinkIcon, XCircle } from "lucide-react";
+
 
 // ✅ API Base
 const api = axios.create({
@@ -101,6 +105,52 @@ const Dashboard = () => {
     }
   };
 
+
+const handleShareNote = async (id: number) => {
+  try {
+    const res = await api.post("/notes/share", { noteId: id });
+    const shareLink = res.data.shareLink;
+
+    await navigator.clipboard.writeText(shareLink);
+
+    toast.custom(() => (
+      <div className="flex items-center justify-between gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-xl shadow-lg w-full sm:w-[350px]">
+        <div className="flex items-center gap-3">
+          <LinkIcon className="w-5 h-5" />
+          <div>
+            <p className="font-semibold">Link Copied!</p>
+            <p className="text-sm opacity-90 truncate max-w-[200px]">
+              {shareLink}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => window.open(shareLink, "_blank")}
+          className="ml-2 text-sm font-medium bg-white/20 hover:bg-white/30 rounded-md px-2 py-1 transition"
+        >
+          Open
+        </button>
+      </div>
+    ));
+
+    console.log("✅ Share link generated:", shareLink);
+  } catch (err: any) {
+    console.error("❌ Error sharing note:", err.response?.data || err.message);
+
+    toast.custom(() => (
+      <div className="flex items-center gap-3 bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg w-full sm:w-[350px]">
+        <XCircle className="w-5 h-5" />
+        <div>
+          <p className="font-semibold">Failed to share</p>
+          <p className="text-sm opacity-90">
+            Something went wrong, please try again.
+          </p>
+        </div>
+      </div>
+    ));
+  }
+};
 
   // ✅ Pagination logic
   const totalPages = Math.ceil(notes.length / notesPerPage);
@@ -198,15 +248,15 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                 {currentNotes.map((note) => (
                   <NoteCard
-                    key={note.id}
-                    note={note}
-                    onEdit={() => {
-                      setEditingNote(note);
-                      setEditDialogOpen(true);
-                    }}
-                    onDelete={() => handleDeleteNote(note.id)}
-                    onShare={() => console.log("Share:", note.id)}
-                  />
+  key={note.id}
+  note={note}
+  onEdit={() => {
+    setEditingNote(note);
+    setEditDialogOpen(true);
+  }}
+  onDelete={() => handleDeleteNote(note.id)}
+  onShare={() => handleShareNote(note.id)} // ✅ New share handler
+/>
 
                 ))}
 
@@ -261,6 +311,8 @@ const Dashboard = () => {
           onUpdate={handleUpdateNote}
         />
       </div>
+
+       <Toaster position="top-right" />
     </ThemeContext.Provider>
   );
 };
